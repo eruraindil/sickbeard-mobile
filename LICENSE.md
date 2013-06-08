@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 This software interacts with the Sick Beard API.
-	The ultimate PVR application that downloads and manages your TV shows
+
+    The ultimate PVR application that downloads and manages your TV shows
     Copyright (C) 2010 - Nic Wolfe
 
     This program is free software: you can redistribute it and/or modify

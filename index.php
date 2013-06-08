@@ -1,9 +1,19 @@
+<?php
+namespace SickBeardMobile;
+
+require_once('parseShows.php');
+
+rprint(getShows());
+
+?>
+
+
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]>    <html class="no-js iem7"> <![endif]-->
 <!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>SickBeard Mobile</title>
         <meta name="description" content="">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
@@ -46,6 +56,7 @@
             </div><!-- /header -->
             <div data-role="content">
                 <p>Page content goes here.</p>
+                <?php rprint(getShows());?>
             </div><!-- /content -->
             <div data-role="footer" data-theme="b">
                 <h4>Page Footer</h4>
