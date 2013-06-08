@@ -3,8 +3,6 @@ namespace SickBeardMobile;
 
 require_once('parseShows.php');
 
-rprint(getShows());
-
 ?>
 
 
@@ -45,26 +43,65 @@ rprint(getShows());
 
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
         <link rel="stylesheet" href="themes/sickbeard-mobile.min.css" />
         <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.1.min.css" />
-        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
-    </head>
-    <body>
-        <div data-role="page">
-            <div data-role="header">
-                <h1>Page Title</h1>
-            </div><!-- /header -->
-            <div data-role="content">
-                <p>Page content goes here.</p>
-                <?php rprint(getShows());?>
-            </div><!-- /content -->
-            <div data-role="footer" data-theme="b">
-                <h4>Page Footer</h4>
-            </div><!-- /footer -->
-        </div><!-- /page -->
 
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
         <script src="js/vendor/jquery-2.0.2.min.js"></script>
         <script src="js/vendor/jquery.mobile-1.3.1.min.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="home">
+            <div data-role="header" data-id="header" data-position="fixed">
+                <a href="#" data-icon="plus" data-iconpos="" title="Add Show">Add Show</a>
+                <h1>SickBeard Mobile</h1>
+                <a href="#" data-icon="gear" data-iconpos="" title="Settings">Settings</a>
+            </div><!-- /header -->
+            <div data-role="content">
+                <div data-role="collapsible-set" data-inset="false">
+                <ul data-role="listview" data-inset="false">
+                <?php foreach(getShows() as $id=>$show):?>
+                    <li><a href="#show">
+                        <img src="<?php echo getShowPoster($id,"100px");?>" style="width:100px; height:147px;" />
+                        <h2><?php echo $show['show_name'];?></h2></a>
+                    </li>
+                <?php endforeach;?>
+                </ul>
+                </div>
+                <?php //rprint(getShows());?>
+            </div><!-- /content -->
+            <div data-role="footer" data-id="foo1" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="a.html">Info</a></li>
+                        <li><a href="b.html">Friends</a></li>
+                        <li><a href="c.html">Albums</a></li>
+                        <li><a href="d.html">Emails</a></li>
+                    </ul>
+                </div><!-- /navbar -->
+            </div><!-- /footer -->
+        </div><!-- /page -->
+        <div data-role="page" id="show">
+            <div data-role="header" data-id="header" data-position="fixed">
+                <a href="#" data-icon="plus" data-iconpos="" title="Add Show">Add Show</a>
+                <h1>SickBeard Mobile</h1>
+                <a href="#" data-icon="gear" data-iconpos="" title="Settings">Settings</a>
+            </div><!-- /header -->
+            <div data-role="content">
+            </div>
+            <div data-role="footer" data-id="foo1" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="a.html">Info</a></li>
+                        <li><a href="b.html">Friends</a></li>
+                        <li><a href="c.html">Albums</a></li>
+                        <li><a href="d.html">Emails</a></li>
+                    </ul>
+                </div><!-- /navbar -->
+            </div><!-- /footer -->
+        </div>
+        
         <script src="js/helper.js"></script>
         <script src="js/main.js"></script>
 
