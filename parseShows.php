@@ -88,8 +88,6 @@ function getShowsAsList() {
         }
     }
     echo("</ul></div>");
-
-    //rprint(getShows("name",0));
 }
 
 function getShowAsPage($id) {
@@ -97,6 +95,7 @@ function getShowAsPage($id) {
     if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
         echo("<img src='thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' />");
     }
+    
 }
 
 function getComingShows($num) {

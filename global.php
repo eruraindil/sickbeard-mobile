@@ -10,10 +10,13 @@ require_once('parseShows.php');
 //echo $sbm->dump();
 
 
+/* HELPER FUNCTIONS */
+
 function rprint($a) {
     echo "<pre>" . print_r($a,1) . "</pre>";
 }
 
+// via https://stackoverflow.com/a/20821250
 function Img_Resize($img,$id,$rs_width,$rs_height) {
     $img = imagecreatefromjpeg("data:image/jpeg;base64," . base64_encode($img));
     $width = 680;
