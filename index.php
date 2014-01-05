@@ -54,20 +54,26 @@ require_once('global.php');
     </head>
     <body>
         <?php 
-        $home = new page('home');
-        $home->getHeader();
-        getShowsAsList();
-        $home->getFooter();
+        if(isset($_GET['show'])) {
+            $show = new page('show');
+            $show->getHeader();
+            getShowAsPage($_GET['show']);
+            $show->getFooter();
+        } else {
+            $home = new page('home');
+            $home->getHeader();
+            getShowsAsList();
+            $home->getFooter();
+        }
         
-        
-        $coming = new page('coming');
+        /*$coming = new page('coming');
         $coming->getHeader();
         getComingShows(10);
         $coming->getFooter();
 
         $history = new page('history');
         $history->getHeader();
-        $history->getFooter();
+        $history->getFooter();*/
         
         ?>
         

@@ -2,9 +2,9 @@
 namespace SickBeardMobile;
 
 require_once('dataStructures.php');
+require_once('global.php');
 
 function getShows($sort = "id", $paused = NULL) {
-
     global $sbm;
 
     $criteria = "shows&sort=$sort" . (isset($paused) ? "&paused=$paused": "");
@@ -14,23 +14,36 @@ function getShows($sort = "id", $paused = NULL) {
 }
 
 function getShowById($id) {
-
+    global $sbm;
+    
+    $criteria = "show&tvdbid=$id";
+    $json = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
+    $json_output = json_decode($json,true);
+    return $json_output['data'];
 }
 
 function getShowByShowName($name) {
     
 }
 
-function getShowPoster($id, $width = NULL) {
+function getShowPoster($id, $width) {
     global $sbm;
 
     $criteria = "show.getposter&tvdbid=$id";
     $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
-    //$contents = file_get_contents($file);
-    return "data:image/png;base64," . base64_encode($contents);
-    //return $json;
-    //$json_output = json_decode($json,true);
-    //return $json_output['data'];
+    return "data:image/jpeg;base64," . base64_encode($contents);    
+}
+
+function getShowThumb($id,$width=100,$height=147) {
+    global $sbm;
+
+    if(file_exists("thumbs/". $id . "_$w" . "x$h" . ".jpg")) {
+        return true;
+    } else {
+        $criteria = "show.getposter&tvdbid=$id";
+        $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
+        return Img_Resize($contents,$id,$width,$height);
+    }
 }
 
 function getHistory($limit=20) {
@@ -65,16 +78,25 @@ function getComing($limit=20) {
 function getShowsAsList() {
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-inset="false">');
-    foreach(getShows() as $id=>$show) {
-        echo("<li><a href='#$id'>");
-            echo("<img src='" . getShowPoster($id,"100px") . "' style='width:100px; height:147px;' />");
-            echo("<h2>" . $show['show_name'] . "</h2></a>
-        </li>");
+    foreach(getShows("name",0) as $name=>$show) {
+        if($show['status'] != "Ended") {
+            echo("<li><a href='?id=$show[tvdbid]'>");
+            if(getShowThumb($show['tvdbid'],$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
+                echo("<img src='thumbs/". $show['tvdbid'] . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px;height:". $SB_LIST_THUMB_H . "px;' />");
+            }
+            echo("<h2>" . $show['show_name'] . "</h2></a></li>");
+        }
     }
-    echo("</ul>
-    </div>");
+    echo("</ul></div>");
 
-    //rprint(getShows());
+    //rprint(getShows("name",0));
+}
+
+function getShowAsPage($id) {
+    $show = getShowById($id);
+    if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
+        echo("<img src='thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' />");
+    }
 }
 
 function getComingShows($num) {

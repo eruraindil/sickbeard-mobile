@@ -19,7 +19,7 @@ class app {
     }
 
     public function getApiUrl() {
-        return $this->url . "//api/" . $this->key . "/?cmd=";
+        return $this->url . "/api/" . $this->key . "/?cmd=";
     }
 
     public function dump() {
