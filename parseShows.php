@@ -1,7 +1,7 @@
 <?php
 namespace SickBeardMobile;
 
-require_once('global.php');
+require_once('dataStructures.php');
 
 function getShows($sort = "id", $paused = NULL) {
 
@@ -60,6 +60,41 @@ function getComing($limit=20) {
     $output['soon'] = $soon;
 
     return $output;
+}
+
+function getShowsAsList() {
+    echo('<div data-role="collapsible-set" data-inset="false">
+    <ul data-role="listview" data-inset="false">');
+    foreach(getShows() as $id=>$show) {
+        echo("<li><a href='#$id'>");
+            echo("<img src='" . getShowPoster($id,"100px") . "' style='width:100px; height:147px;' />");
+            echo("<h2>" . $show['show_name'] . "</h2></a>
+        </li>");
+    }
+    echo("</ul>
+    </div>");
+
+    //rprint(getShows());
+}
+
+function getComingShows($num) {
+    echo('<ul data-role="listview" data-inset="true" data-divider-theme="b">');
+    foreach(getComing($num) as $section => $contents) {
+        echo('<li data-role="list-divider">');
+            echo ucfirst($section);
+            echo("<span class='ui-li-count'>" . count($contents) . "</span>
+        </li>");
+        foreach($contents as $item) {
+            echo("<li>
+                <a href='#" . $item['tvdbid'] . "'>" . 
+                    $item['airdate'] . " @ " . 
+                    date("ga",strtotime($item['airs'])) . " " .
+                    $item['show_name'] . " " . $item['season'] . "x" . $item['episode'] . " - <em>" . $item['ep_name'] . "</em>
+                </a>
+            </li>");
+        }
+    }
+    echo('</ul>');
 }
 
 ?>

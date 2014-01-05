@@ -1,7 +1,7 @@
 <?php
 namespace SickBeardMobile;
 
-require_once('parseShows.php');
+require_once('global.php');
 
 ?>
 
@@ -43,6 +43,7 @@ require_once('parseShows.php');
 
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
         <link rel="stylesheet" href="themes/sickbeard-mobile.min.css" />
         <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.1.min.css" />
@@ -52,128 +53,23 @@ require_once('parseShows.php');
         <script src="js/vendor/jquery.mobile-1.3.1.min.js"></script>
     </head>
     <body>
-        <div data-role="page" id="home">
-            <div data-role="header" data-id="header" data-position="fixed">
-                <a href="#" data-icon="plus" data-iconpos="notext" title="Add Show">Add Show</a>
-                <h1>SickBeard Mobile</h1>
-                <a href="#" data-icon="gear" data-iconpos="notext" title="Settings">Settings</a>
-            </div><!-- /header -->
-            <div data-role="content">
-                <div data-role="collapsible-set" data-inset="false">
-                <ul data-role="listview" data-inset="false">
-                <?php foreach(getShows() as $id=>$show):?>
-                    <li><a href="#<?php echo $id;?>">
-                        <img src="<?php echo getShowPoster($id,"100px");?>" style="width:100px; height:147px;" />
-                        <h2><?php echo $show['show_name'];?></h2></a>
-                    </li>
-                <?php endforeach;?>
-                </ul>
-                </div>
-                <?php //rprint(getShows());?>
-            </div><!-- /content -->
-            <div data-role="footer" data-id="foo1" data-position="fixed" data-theme="b">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="#coming" data-icon="star">Coming</a></li>
-                        <li><a href="#history" data-icon="info">History</a></li> <!--  class="ui-btn-active" -->
-                        <li><a href="#log" data-icon="alert">Log</a></li>
-                    </ul>
-                </div><!-- /navbar -->
-            </div><!-- /footer -->
-        </div><!-- /page -->
-        <div data-role="page" id="show">
-            <div data-role="header" data-id="header" data-position="fixed">
-                <a href="#" data-icon="back" data-iconpos="notext" data-rel="back" title="Go Home">Home</a>
-                <h1>SickBeard Mobile</h1>
-                <a href="#" data-icon="gear" data-iconpos="notext" title="Settings">Settings</a>
-            </div><!-- /header -->
-            <div data-role="content">
-            </div>
-            <div data-role="footer" data-id="foo1" data-position="fixed" data-theme="b">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="#coming" data-icon="star">Coming</a></li>
-                        <li><a href="#history" data-icon="info">History</a></li> <!--  class="ui-btn-active" -->
-                        <li><a href="#log" data-icon="alert">Log</a></li>
-                    </ul>
-                </div><!-- /navbar -->
-            </div><!-- /footer -->
-        </div>
+        <?php 
+        $home = new page('home');
+        $home->getHeader();
+        getShowsAsList();
+        $home->getFooter();
+        
+        
+        $coming = new page('coming');
+        $coming->getHeader();
+        getComingShows(10);
+        $coming->getFooter();
 
-        <div data-role="page" id="coming">
-            <div data-role="header" data-id="header" data-position="fixed">
-                <a href="#" data-icon="back" data-iconpos="notext" data-rel="back" title="Go Home">Home</a>
-                <h1>SickBeard Mobile</h1>
-                <a href="#" data-icon="gear" data-iconpos="notext" title="Settings">Settings</a>
-            </div><!-- /header -->
-            <div data-role="content">
-                <ul data-role="listview" data-inset="true" data-divider-theme="b">
-                <?php foreach(getComing(10) as $section => $contents):?>
-                    <li data-role="list-divider">
-                        <?php echo ucfirst($section);?>
-                        <span class="ui-li-count"><?php echo count($contents);?></span>
-                    </li>
-                    <?php foreach($contents as $item):?>
-                        <li>
-                            <a href="#<?php echo $item['tvdbid'];?>">
-                                <?php echo $item['airdate'] . " @ " . date("ga",strtotime($item['airs']));?>
-                                <?php echo $item['show_name'];?>
-                                <?php echo $item['season'];?>x<?php echo $item['episode'];?> - 
-                                <em><?php echo $item['ep_name'];?></em>
-                            </a>
-                        </li>
-                    <?php endforeach;
-                endforeach;?>
-                </ul>
-            </div>
-            <div data-role="footer" data-id="foo1" data-position="fixed" data-theme="b">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="#coming" data-icon="star" class="ui-btn-active">Coming</a></li>
-                        <li><a href="#history" data-icon="info">History</a></li>
-                        <li><a href="#log" data-icon="alert">Log</a></li>
-                    </ul>
-                </div><!-- /navbar -->
-            </div><!-- /footer -->
-        </div>
-
-        <div data-role="page" id="history">
-            <div data-role="header" data-id="header" data-position="fixed">
-                <a href="#" data-icon="back" data-iconpos="notext" data-rel="back" title="Go Home">Home</a>
-                <h1>SickBeard Mobile</h1>
-                <a href="#" data-icon="gear" data-iconpos="notext" title="Settings">Settings</a>
-            </div><!-- /header -->
-            <div data-role="content">
-<table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive table-stroke">
-  <thead>
-    <tr>
-      <th data-priority="2">Date</th>
-      <th data-priority="persist">Show</th>
-      <th data-priority="1">Episode</th>
-      <th data-priority="3">Status</th>
-    </tr>
-  </thead>
-  <tbody>
-                <?php foreach(getHistory(10) as $dl):?>
-    <tr>
-      <th><?php echo date("Y-m-d H:i",strtotime($dl['date']));?></th>
-      <td><?php echo $dl['show_name'];?></td>
-      <td><?php echo $dl['season'];?>x<?php echo $dl['episode'];?></td>
-      <td><?php echo $dl['status'];?></td>
-    </tr>
-                <?php endforeach;?>
-</table>
-            </div>
-            <div data-role="footer" data-id="foo1" data-position="fixed" data-theme="b">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="#coming" data-icon="star">Coming</a></li>
-                        <li><a href="#history" data-icon="info" class="ui-btn-active">History</a></li>
-                        <li><a href="#log" data-icon="alert">Log</a></li>
-                    </ul>
-                </div><!-- /navbar -->
-            </div><!-- /footer -->
-        </div>
+        $history = new page('history');
+        $history->getHeader();
+        $history->getFooter();
+        
+        ?>
         
         <script src="js/helper.js"></script>
         <script src="js/main.js"></script>
