@@ -1,5 +1,5 @@
             </div><!-- /content -->
-            <?php if($menu != "no-menu"):?>
+            <?php if($offline != "offline"):?>
             <div data-role="footer" data-id="foo1" data-position="fixed" data-theme="b">
                 <div data-role="navbar">
                     <ul>

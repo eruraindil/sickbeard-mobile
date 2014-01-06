@@ -15,19 +15,40 @@ function contactSickBeard($criteria) {
 }
 
 function getShows($sort = "name", $paused = NULL) {
-    $contents = contactSickBeard("shows&sort=$sort" . (isset($paused) ? "&paused=$paused": ""));
+    $CACHE_FILE = "cache/getShows.json";
+    
+    if(file_exists($CACHE_FILE)) {
+        $contents = file_get_contents($CACHE_FILE, 0, null, null);
+    } else {
+        $contents = contactSickBeard("shows&sort=$sort" . (isset($paused) ? "&paused=$paused": ""));
+        file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+    }
     $json_output = json_decode($contents,true);
     return $json_output['data'];
 }
 
 function getShowById($id) {
-    $contents = contactSickBeard("show&tvdbid=$id");
+    $CACHE_FILE = "cache/getShow_$id.json";
+    
+    if(file_exists($CACHE_FILE)) {
+        $contents = file_get_contents($CACHE_FILE, 0, null, null);
+    } else {
+        $contents = contactSickBeard("show&tvdbid=$id");
+        file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+    }
     $json_output = json_decode($contents,true);
     return $json_output['data'];
 }
 
-function getShowByShowName($name) {
-    $contents = contactSickBeard("show&name=$name");
+function getShowByShowName($name,$id) {
+    $CACHE_FILE = "cache/getShow_$id.json";
+    
+    if(file_exists($CACHE_FILE)) {
+        $contents = file_get_contents($CACHE_FILE, 0, null, null);
+    } else {
+        $contents = contactSickBeard("show&name=$name");
+    file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+    }
     $json_output = json_decode($contents,true);
     return $json_output['data'];
 }
@@ -38,7 +59,7 @@ function getShowPoster($id, $width) {
 }
 
 function getShowThumb($id,$width=100,$height=147) {
-    if(file_exists("thumbs/". $id . "_$w" . "x$h" . ".jpg")) {
+    if(file_exists("cache/thumbs/". $id . "_$w" . "x$h" . ".jpg")) {
         return true;
     } else {
         $contents = contactSickBeard("show.getposter&tvdbid=$id");
@@ -72,16 +93,20 @@ function getComing($limit=20) {
 function getShowsAsList() {
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-inset="false">');
-    foreach(getShows("name",0) as $name=>$show) {
-        if($show['status'] != "Ended") {
+    $shows = getShows("name",0);
+    
+    foreach($shows as $name=>$show) {
+        $id = $show['tvdbid'];
+        //if($show['status'] != "Ended") {
             echo("<li><a href='?id=$show[tvdbid]'>");
-            if(getShowThumb($show['tvdbid'],$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
-                echo("<img src='thumbs/". $show['tvdbid'] . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px;height:". $SB_LIST_THUMB_H . "px;' />");
+            if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
+                echo("<img src='thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px;height:". $SB_LIST_THUMB_H . "px;' />");
             }
-            echo("<h2>" . $show['show_name'] . "</h2></a></li>");
-        }
+            echo("<h2>" . $name . "</h2></a></li>");
+        //}
     }
     echo("</ul></div>");
+
 }
 
 function getShowAsPage($id) {

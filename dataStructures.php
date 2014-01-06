@@ -35,11 +35,11 @@ class page {
         $this->name = $name;
     }
 
-    public function getHeader() {
+    public function getHeader($offline = NULL) {
         include('includes/header.php');
     }
 
-    public function getFooter($menu = NULL) {
+    public function getFooter($offline = NULL) {
         include('includes/footer.php');
     }
 }

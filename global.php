@@ -40,7 +40,8 @@ function Img_Resize($img,$id,$rs_width,$rs_height) {
     
     return "thumbs/$id.jpg";
     */
-    imagejpeg( $img_base, "thumbs/". $id . "_$rs_width" . "x$rs_height" . ".jpg", 80 );
+
+    return imagejpeg( $img_base, "thumbs/". $id . "_$rs_width" . "x$rs_height" . ".jpg", 80 );
 }
 
 function is_setup() {

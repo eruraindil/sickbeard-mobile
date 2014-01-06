@@ -7,8 +7,8 @@ require_once('parseSettings.php');
 getFormSubmit();
 
 $setup = new page('settings');
-$setup->getHeader();
+$setup->getHeader("offline");
 getSettingsAsForm();
-$setup->getFooter("no-menu");
+$setup->getFooter("offline");
 
 ?>

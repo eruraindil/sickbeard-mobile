@@ -31,7 +31,7 @@ function getFormSubmit() {
         if(file_exists('settings.json')) {
             header("Location: ./");
         } else {
-            echo "There was an error";
+            header("Location: error.php?2");
         }
     }
 }
