@@ -1,11 +1,10 @@
 <?php
 namespace SickBeardMobile;
 
-$json = file_get_contents('settings.json', 0, null, null);
-
-if($json == NULL) { //SBM is not set up, enter some basic info!
-    header("Location: setup");
+if(!is_setup()) { //SBM is not set up, enter some basic info!
+    header("Location: setup.php");
 }
+$json = file_get_contents('settings.json', 0, null, null);
 $setup = json_decode($json,true);
 
 /* GLOBAL VARIABLES */
@@ -19,6 +18,7 @@ $SB_PAGE_THUMB_H = 441;
 require_once('dataStructures.php');
 $sbm = new app($setup['SB_KEY'],$setup['SB_URL']);
 require_once('parseShows.php');
+require_once('parseSettings.php');
 
 /* HELPER FUNCTIONS */
 
@@ -41,5 +41,13 @@ function Img_Resize($img,$id,$rs_width,$rs_height) {
     return "thumbs/$id.jpg";
     */
     imagejpeg( $img_base, "thumbs/". $id . "_$rs_width" . "x$rs_height" . ".jpg", 80 );
+}
+
+function is_setup() {
+    if(file_exists('settings.json')) {
+        return true;
+    } else {
+        return false;
+    }
 }
 ?>

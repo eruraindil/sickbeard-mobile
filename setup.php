@@ -2,10 +2,13 @@
 namespace SickBeardMobile;
 
 require_once('dataStructures.php');
+require_once('parseSettings.php');
 
-$setup = new page('setup');
+getFormSubmit();
+
+$setup = new page('settings');
 $setup->getHeader();
-echo "form to input url and api num of sickbeard installation. On form submit, save the settings.json file and reload index";
+getSettingsAsForm();
 $setup->getFooter("no-menu");
 
 ?>

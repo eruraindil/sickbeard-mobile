@@ -1,66 +1,60 @@
 <?php
 namespace SickBeardMobile;
 
-require_once('dataStructures.php');
 require_once('global.php');
 
-function getShows($sort = "id", $paused = NULL) {
+function contactSickBeard($criteria) {
     global $sbm;
+    
+    $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
+    if($contents == NULL) {
+        header("Location: error.php?1");
+    }
+    
+    return $contents;
+}
 
-    $criteria = "shows&sort=$sort" . (isset($paused) ? "&paused=$paused": "");
-    $json = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
-    $json_output = json_decode($json,true);
+function getShows($sort = "name", $paused = NULL) {
+    $contents = contactSickBeard("shows&sort=$sort" . (isset($paused) ? "&paused=$paused": ""));
+    $json_output = json_decode($contents,true);
     return $json_output['data'];
 }
 
 function getShowById($id) {
-    global $sbm;
-    
-    $criteria = "show&tvdbid=$id";
-    $json = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
-    $json_output = json_decode($json,true);
+    $contents = contactSickBeard("show&tvdbid=$id");
+    $json_output = json_decode($contents,true);
     return $json_output['data'];
 }
 
 function getShowByShowName($name) {
-    
+    $contents = contactSickBeard("show&name=$name");
+    $json_output = json_decode($contents,true);
+    return $json_output['data'];
 }
 
 function getShowPoster($id, $width) {
-    global $sbm;
-
-    $criteria = "show.getposter&tvdbid=$id";
-    $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
+    $contents = contactSickBeard("show.getposter&tvdbid=$id");
     return "data:image/jpeg;base64," . base64_encode($contents);    
 }
 
 function getShowThumb($id,$width=100,$height=147) {
-    global $sbm;
-
     if(file_exists("thumbs/". $id . "_$w" . "x$h" . ".jpg")) {
         return true;
     } else {
-        $criteria = "show.getposter&tvdbid=$id";
-        $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
+        $contents = contactSickBeard("show.getposter&tvdbid=$id");
         return Img_Resize($contents,$id,$width,$height);
     }
 }
 
 function getHistory($limit=20) {
-    global $sbm;
-
-    $criteria = "history&limit=$limit";
-    $json = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
-    $json_output = json_decode($json,true);
+    $contents = contactSickBeard("history&limit=$limit");
+    $json_output = json_decode($contents,true);
     return $json_output['data'];
 }
 
 function getComing($limit=20) {
-    global $sbm;
-
-    $criteria = "future&type=missed|today|soon";
-    $json = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
-    $json_output = json_decode($json,true);
+    $contents = contactSickBeard("future&type=missed|today|soon");
+    $json_output = json_decode($contents,true);
 
     $missed = $json_output['data']['missed'];
     $today = $json_output['data']['today'];

@@ -3,9 +3,11 @@ namespace SickBeardMobile;
 
 require_once('global.php');
 
+getFormSubmit();
+
 $settings = new page('settings');
 $settings->getHeader();
-echo "hello";
+getSettingsAsForm();
 $settings->getFooter();
 
 ?>
