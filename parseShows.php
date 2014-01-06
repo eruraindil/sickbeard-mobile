@@ -8,7 +8,7 @@ function contactSickBeard($criteria) {
     
     $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
     if($contents == NULL) {
-        header("Location: error.php?1");
+        header("Location: error?1");
     }
     
     return $contents;
@@ -21,7 +21,9 @@ function getShows($sort = "name", $paused = NULL) {
         $contents = file_get_contents($CACHE_FILE, 0, null, null);
     } else {
         $contents = contactSickBeard("shows&sort=$sort" . (isset($paused) ? "&paused=$paused": ""));
-        file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+        if($contents != NULL) {
+            file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+        }
     }
     $json_output = json_decode($contents,true);
     return $json_output['data'];
@@ -34,7 +36,9 @@ function getShowById($id) {
         $contents = file_get_contents($CACHE_FILE, 0, null, null);
     } else {
         $contents = contactSickBeard("show&tvdbid=$id");
-        file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+        if($contents != NULL) {
+            file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+        }
     }
     $json_output = json_decode($contents,true);
     return $json_output['data'];
@@ -47,7 +51,9 @@ function getShowByShowName($name,$id) {
         $contents = file_get_contents($CACHE_FILE, 0, null, null);
     } else {
         $contents = contactSickBeard("show&name=$name");
-    file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+        if($contents != NULL) {
+            file_put_contents($CACHE_FILE,$contents,LOCK_EX);
+        }
     }
     $json_output = json_decode($contents,true);
     return $json_output['data'];
@@ -59,7 +65,7 @@ function getShowPoster($id, $width) {
 }
 
 function getShowThumb($id,$width=100,$height=147) {
-    if(file_exists("cache/thumbs/". $id . "_$w" . "x$h" . ".jpg")) {
+    if(file_exists("cache/thumbs/". $id . "_$width" . "x$height" . ".jpg")) {
         return true;
     } else {
         $contents = contactSickBeard("show.getposter&tvdbid=$id");
@@ -91,16 +97,19 @@ function getComing($limit=20) {
 }
 
 function getShowsAsList() {
+    global $SB_LIST_THUMB_W;
+    global $SB_LIST_THUMB_H;
+    
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-inset="false">');
-    $shows = getShows("name",0);
     
+    $shows = getShows("name",0);
     foreach($shows as $name=>$show) {
         $id = $show['tvdbid'];
         //if($show['status'] != "Ended") {
             echo("<li><a href='?id=$show[tvdbid]'>");
             if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
-                echo("<img src='thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px;height:". $SB_LIST_THUMB_H . "px;' />");
+                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px;height:". $SB_LIST_THUMB_H . "px;' />");
             }
             echo("<h2>" . $name . "</h2></a></li>");
         //}
@@ -110,9 +119,12 @@ function getShowsAsList() {
 }
 
 function getShowAsPage($id) {
+    global $SB_PAGE_THUMB_W;
+    global $SB_PAGE_THUMB_H;
+    
     $show = getShowById($id);
     if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
-        echo("<img src='thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' />");
+        echo("<img src='cache/thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' />");
     }
     
 }
@@ -126,9 +138,9 @@ function getComingShowsAsList($num) {
         </li>");
         foreach($contents as $item) {
             echo("<li>
-                <a href='?" . $item['tvdbid'] . "'>" . 
+                <a href='./?id=" . $item['tvdbid'] . "'>" . 
                     $item['airdate'] . " @ " . 
-                    date("ga",strtotime($item['airs'])) . " " .
+                    date("ga",strtotime($item['airs'])) . " - " .
                     $item['show_name'] . " " . $item['season'] . "x" . $item['episode'] . " - <em>" . $item['ep_name'] . "</em>
                 </a>
             </li>");
@@ -141,9 +153,9 @@ function getHistoryAsList($num) {
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-inset="false">');
     foreach(getHistory($num) as $show) {
-        echo("<li><a href='?id=$show[tvdbid]'>");
-        echo(date("ga",strtotime($show['date'])) . " " .
-            $show['show_name'] . " " . $show['season'] . "x" . $show['episode'] . "</a></li>");
+        echo("<li><a href='./?id=$show[tvdbid]'>");
+        echo(date("Y-m-d @ h:i",strtotime($show['date'])) . " " .
+            $show['show_name'] . " - " . $show['season'] . "x" . $show['episode'] . "</a></li>");
     }
     echo("</ul></div>");
 }

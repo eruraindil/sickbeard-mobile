@@ -2,7 +2,7 @@
 namespace SickBeardMobile;
 
 if(!is_setup()) { //SBM is not set up, enter some basic info!
-    header("Location: setup.php");
+    header("Location: setup");
 }
 $json = file_get_contents('settings.json', 0, null, null);
 $setup = json_decode($json,true);
@@ -41,7 +41,7 @@ function Img_Resize($img,$id,$rs_width,$rs_height) {
     return "thumbs/$id.jpg";
     */
 
-    return imagejpeg( $img_base, "thumbs/". $id . "_$rs_width" . "x$rs_height" . ".jpg", 80 );
+    return imagejpeg( $img_base, "cache/thumbs/". $id . "_$rs_width" . "x$rs_height" . ".jpg", 80 );
 }
 
 function is_setup() {

@@ -3,10 +3,10 @@ namespace SickBeardMobile;
 
 require_once('global.php');
 
-if(isset($_GET['show'])) {
+if(isset($_GET['id'])) {
     $show = new page('show');
     $show->getHeader();
-    getShowAsPage($_GET['show']);
+    getShowAsPage($_GET['id']);
     $show->getFooter();
 } else {
     $home = new page('home');

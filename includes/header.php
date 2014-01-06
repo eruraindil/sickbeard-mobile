@@ -44,11 +44,11 @@
             <div data-role="header" data-id="header" data-position="fixed">
                 <?php if($this->name == "home"):?>
                 <!-- data-iconpos="notext"-->
-                <a href="addshow.php" data-icon="plus" title="Add Show">Add Show</a>
+                <a href="addshow" data-icon="plus" title="Add Show">Add Show</a>
                 <?php else:?>
                 <a href="./" data-icon="home" title="Go Home">Go Home</a>
                 <?php endif;?>
                 <h1>SickBeard Mobile</h1>
-                <a href="settings.php" data-icon="gear"<?php echo($this->name == "settings" ? ' class="ui-btn-active"' : '');?> title="Settings">Settings</a>
+                <a href="settings" data-icon="gear"<?php echo($this->name == "settings" ? ' class="ui-btn-active"' : '');?> title="Settings">Settings</a>
             </div><!-- /header -->
             <div data-role="content">
