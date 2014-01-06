@@ -59,7 +59,7 @@ function getShowByShowName($name,$id) {
     return $json_output['data'];
 }
 
-function getShowPoster($id, $width) {
+function getShowPoster($id) {
     $contents = contactSickBeard("show.getposter&tvdbid=$id");
     return "data:image/jpeg;base64," . base64_encode($contents);    
 }
@@ -124,7 +124,10 @@ function getShowAsPage($id) {
     
     $show = getShowById($id);
     if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
-        echo("<img src='cache/thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' />");
+        echo("<a href='#popup-$id' data-rel='popup' data-position-to='window' data-transition='fade'><img src='cache/thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' class='popphoto' alt='" . $show['show_name'] . "' />");
+        echo("<div data-role='popup' id='popup-$id' data-overlay-theme='b' data-theme='b' data-corners='false'>
+    <a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right'>Close</a><img class='popphoto' src='" . getShowPoster($id) . "' style='max-height:512px;' alt='" . $show['show_name'] . "'>
+</div>");
     }
     
 }
