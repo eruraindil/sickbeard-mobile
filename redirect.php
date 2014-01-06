@@ -1,26 +1,31 @@
 <?php
-	// ************************************************************************
-	// The two-second sleep simulates network delays, hopefully causing a
-	// loading indicator message to appear on the client side.
-	// ************************************************************************
-	sleep(2);
+$dst = ( isset( $_GET[ "to" ] )
+    ? $_GET[ "to" ]
+    : ( isset( $_POST[ "to" ] )
+        ? $_POST[ "to" ]
+        : false ) );
+if ( $dst ):?>
+		
+<!DOCTYPE html>
+<html>
+    <header>
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="themes/sickbeard-mobile.min.css" />
+        <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+        <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
 
-	$dst = ( isset( $_GET[ "to" ] )
-		? $_GET[ "to" ]
-		: ( isset( $_POST[ "to" ] )
-			? $_POST[ "to" ]
-			: false ) );
-	if ( $dst ) {
-		// **********************************************************************
-		// The crucial line: Issue a custom header with the location to which the
-		// redirect should happen. For simplicity, we simply redirect to whatever
-		// location was specified in the request's "to" parameter, but real-world
-		// scripts can compute the destination based on server-side state.
-		//
-		// NB: This is not a HTTP redirect. As far as HTTP is concerned, this is
-		// a normal request/response cycle with a status code of 200.
-		// **********************************************************************
-        echo $dst;
-		header( "X-Redirect: " . $dst );
-	}
-?>
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="js/vendor/jquery-2.0.3.min.js"></script>
+        <script src="js/vendor/jquery.mobile-1.4.0.min.js"></script>
+        
+        <script>
+            $(document).ready(function() {
+                $.mobile.loading("show");
+                window.location.replace("<?php echo $dst;?>");
+            });
+        </script>
+    </header>
+    <body></body>
+</html>
+
+<?php endif;?>

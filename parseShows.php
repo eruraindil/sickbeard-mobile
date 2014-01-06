@@ -4,7 +4,7 @@ namespace SickBeardMobile;
 require_once('global.php');
 
 function getFile($CACHE_FILE, $criteria) {
-    if(file_exists($CACHE_FILE) && (filemtime($CACHE_FILE) < strtotime("-1 day"))) {
+    if(file_exists($CACHE_FILE) && (strtotime("-1 day") - filemtime($CACHE_FILE) < 0)) {
         $contents = file_get_contents($CACHE_FILE, 0, null, null);
     } else {
         $contents = contactSickBeard($criteria);
@@ -109,7 +109,7 @@ function getShowsAsList() {
     global $SB_LIST_THUMB_W;
     global $SB_LIST_THUMB_H;
     
-    echo('<a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh">Force Refresh</a>');
+    echo('<a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-ajax="false">Force Refresh</a>');
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">');
     
@@ -153,7 +153,7 @@ function getShowAsPage($id) {
             </div>
         </div><!-- /ui-block-a -->
         <div class="ui-block-b">
-            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh">Force Refresh</a>
+            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-ajax="false">Force Refresh</a>
             <h2><?php echo $show['show_name'];?></h2>
             <table data-role='table'>
                 <thead>
@@ -192,7 +192,15 @@ function getComingShowsAsList($num) {
             </li>");
             foreach($contents as $item) {
                 echo("<li>
-                    <a href='./?id=" . $item['tvdbid'] . "'>" . 
+                    <a href='./?id=" . $item['tvdbid'] . "'");
+                if($section == 'today') {
+                    echo(' style="background-color:#E2FFD8!important;"');
+                } else if($section == 'missed') {
+                    echo(' style="background-color:#FDEBF3!important;"');
+                } else {
+                    echo(' style="background-color:#F5F1E4!important;"');
+                }
+                echo(">" . 
                         $item['airdate'] . " - " .
                         $item['show_name'] . " " . $item['season'] . "x" . $item['episode'] . " - <em>" . $item['ep_name'] . "</em>
                     </a>
@@ -207,7 +215,7 @@ function getHistoryAsList($num) {
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-inset="false">');
     foreach(getHistory($num) as $show) {
-        echo("<li><a href='./?id=$show[tvdbid]'>");
+        echo("<li><a href='./?id=$show[tvdbid]'" . ($show['status'] == 'Downloaded' ? ' style="background-color:#E2FFD8!important;"' : ' style="background-color:#FDEBF3!important;"') . ">");
         echo(date("Y-m-d @ h:i",strtotime($show['date'])) . " " .
             $show['show_name'] . " - " . $show['season'] . "x" . $show['episode'] . "</a></li>");
     }
