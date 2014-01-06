@@ -41,12 +41,11 @@
         <div data-role="page" id="<?php echo $this->name; ?>">
             <div data-role="header" data-position="fixed">
                 <?php if($this->name == "home"):?>
-                <!-- data-iconpos="notext"-->
-                <a href="addshow" data-icon="plus" title="Add Show" data-prefetch="true">Add Show</a>
+                <a href="addshow" data-icon="plus" data-iconpos="notext" title="Add Show" data-prefetch="true">Add Show</a>
                 <?php else:?>
-                <a href="./" data-icon="home" title="Go Home" data-prefetch="true">Home</a>
+                <a href="./" data-icon="home" data-iconpos="notext" title="Go Home" data-prefetch="true">Home</a>
                 <?php endif;?>
                 <h1>SickBeard Mobile</h1>
-                <a href="settings" data-icon="gear"<?php echo($this->name == "settings" ? ' class="ui-btn-active"' : '');?> title="Settings" data-prefetch="true">Settings</a>
+                <a href="settings" data-icon="gear"<?php echo($this->name == "settings" ? ' class="ui-btn-active"' : '');?> data-iconpos="notext" title="Settings" data-prefetch="true">Settings</a>
             </div><!-- /header -->
             <div <div role="main" class="ui-content">

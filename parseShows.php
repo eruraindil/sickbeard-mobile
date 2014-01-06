@@ -123,12 +123,17 @@ function getShowAsPage($id) {
     global $SB_PAGE_THUMB_H;
     
     $show = getShowById($id);
-    if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
+    /*if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
         echo("<a href='#popup-$id' data-rel='popup' data-position-to='window' data-transition='fade'><img src='cache/thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' class='popphoto' alt='" . $show['show_name'] . "' />");
         echo("<div data-role='popup' id='popup-$id' data-overlay-theme='b' data-theme='b' data-corners='false'>
+        <a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right'>Close</a><img class='popphoto' src='" . getShowPoster($id) . "' style='max-height:512px;' alt='" . $show['show_name'] . "'>
+        </div>");
+    }*/
+
+    echo("<a href='#popup-$id' data-rel='popup' data-position-to='window' data-transition='fade'><img src='" . getShowPoster($id) . "' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' class='popphoto' alt='" . $show['show_name'] . "' />");
+    echo("<div data-role='popup' id='popup-$id' data-overlay-theme='b' data-theme='b' data-corners='false'>
     <a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right'>Close</a><img class='popphoto' src='" . getShowPoster($id) . "' style='max-height:512px;' alt='" . $show['show_name'] . "'>
-</div>");
-    }
+    </div>");
     
 }
 
