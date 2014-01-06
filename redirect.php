@@ -10,7 +10,7 @@ if ( $dst ):?>
 <html>
     <header>
         <meta charset="utf-8">
-        <title>SickBeard Mobile - <?php echo $this->name; ?></title>
+        <title>SickBeard Mobile</title>
         <meta name="description" content="">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
