@@ -39,7 +39,7 @@ class page {
         include('includes/header.php');
     }
 
-    public function getFooter() {
+    public function getFooter($menu = NULL) {
         include('includes/footer.php');
     }
 }

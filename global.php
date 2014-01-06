@@ -1,14 +1,24 @@
 <?php
 namespace SickBeardMobile;
 
-require_once('settings.php');
+$json = file_get_contents('settings.json', 0, null, null);
+
+if($json == NULL) { //SBM is not set up, enter some basic info!
+    header("Location: setup");
+}
+$setup = json_decode($json,true);
+
+/* GLOBAL VARIABLES */
+
+$SB_LIST_THUMB_W = 100;
+$SB_LIST_THUMB_H = 147;
+
+$SB_PAGE_THUMB_W = 300;
+$SB_PAGE_THUMB_H = 441;
+
 require_once('dataStructures.php');
-$sbm = new app($SB_KEY,$SB_URL);
+$sbm = new app($setup['SB_KEY'],$setup['SB_URL']);
 require_once('parseShows.php');
-
-
-//echo $sbm->dump();
-
 
 /* HELPER FUNCTIONS */
 

@@ -5,7 +5,7 @@ require_once('global.php');
 
 $coming = new page('coming');
 $coming->getHeader();
-getComingShows(10);
+getComingShowsAsList(10);
 $coming->getFooter();
 
 ?>

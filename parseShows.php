@@ -98,7 +98,7 @@ function getShowAsPage($id) {
     
 }
 
-function getComingShows($num) {
+function getComingShowsAsList($num) {
     echo('<ul data-role="listview" data-inset="true" data-divider-theme="b">');
     foreach(getComing($num) as $section => $contents) {
         echo('<li data-role="list-divider">');
@@ -107,7 +107,7 @@ function getComingShows($num) {
         </li>");
         foreach($contents as $item) {
             echo("<li>
-                <a href='#" . $item['tvdbid'] . "'>" . 
+                <a href='?" . $item['tvdbid'] . "'>" . 
                     $item['airdate'] . " @ " . 
                     date("ga",strtotime($item['airs'])) . " " .
                     $item['show_name'] . " " . $item['season'] . "x" . $item['episode'] . " - <em>" . $item['ep_name'] . "</em>
@@ -116,6 +116,17 @@ function getComingShows($num) {
         }
     }
     echo('</ul>');
+}
+
+function getHistoryAsList($num) {
+    echo('<div data-role="collapsible-set" data-inset="false">
+    <ul data-role="listview" data-inset="false">');
+    foreach(getHistory($num) as $show) {
+        echo("<li><a href='?id=$show[tvdbid]'>");
+        echo(date("ga",strtotime($show['date'])) . " " .
+            $show['show_name'] . " " . $show['season'] . "x" . $show['episode'] . "</a></li>");
+    }
+    echo("</ul></div>");
 }
 
 ?>

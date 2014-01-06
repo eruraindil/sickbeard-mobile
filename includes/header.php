@@ -43,11 +43,12 @@
         <div data-role="page" id="<?php echo $this->name; ?>">
             <div data-role="header" data-id="header" data-position="fixed">
                 <?php if($this->name == "home"):?>
-                <a data-iconpos="notext" href="addshow" data-icon="plus" title="Add Show">Add Show</a>
+                <!-- data-iconpos="notext"-->
+                <a href="addshow" data-icon="plus" title="Add Show">Add Show</a>
                 <?php else:?>
-                <a data-iconpos="notext" href="./" data-icon="home" title="Go Home">Go Home</a>
+                <a href="./" data-icon="home" title="Go Home">Go Home</a>
                 <?php endif;?>
                 <h1>SickBeard Mobile</h1>
-                <a href="#settings" data-iconpos="notext" data-icon="gear" title="Settings">Settings</a>
+                <a href="settings" data-icon="gear" title="Settings">Settings</a>
             </div><!-- /header -->
             <div data-role="content">
