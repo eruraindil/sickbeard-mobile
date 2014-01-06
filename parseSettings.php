@@ -16,6 +16,7 @@ function getSettingsAsForm() {
         <input type='text' id='key' name='key' value='" . (isset($sbm) ? $sbm->getKey() : '') . "' data-clear-btn='true'>
         
         <button type='submit'>OK</button>
+        <a href='./' class='ui-btn'>Cancel</a>
     </form>");
 }
 
