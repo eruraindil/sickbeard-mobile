@@ -36,6 +36,25 @@
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
         <script src="js/vendor/jquery-2.0.3.min.js"></script>
         <script src="js/vendor/jquery.mobile-1.4.0.min.js"></script>
+        <script id="redirectCode">
+            //from https://github.com/jquery/jquery-mobile/blob/4f826b3444ad187202a7c4f5dff3838728e44c6c/demos/navigation-php-redirect/index.php
+            $( document ).bind( "pagecontainerload", function( e, triggerData ) {
+                var redirect = triggerData.xhr.getResponseHeader( "X-Redirect" );
+                if ( redirect ) {
+                    //$( e.target ).pagecontainer( "load", redirect, triggerData.options );
+                    //e.preventDefault();
+                        
+                    $( e.target ).pagecontainer( "load", redirect, {
+                        type: "get",
+                        reload: true,
+                        deferred: triggerData.options.deferred,
+                        fromPage: triggerData.options.fromPage
+                    } );
+                    e.preventDefault();
+                }
+            });
+        </script>
+        </script>
     </head>
     <body>
         <div data-role="page" id="<?php echo $this->name; ?>">

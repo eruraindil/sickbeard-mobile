@@ -19,7 +19,7 @@ function parseFile($contents) {
     $json_output = json_decode($contents,true);
     if($json_output != NULL) {
         if($json_output['result'] == "denied") {
-            header("Location: error?3");
+            header("Location: redirect?to=error?3");
         }
     }
     
@@ -31,7 +31,7 @@ function contactSickBeard($criteria) {
     
     $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
     if($contents == NULL) {
-        header("Location: error?1");
+        header("Location: redirect?to=error?1");
     }
     
     return $contents;
@@ -109,6 +109,7 @@ function getShowsAsList() {
     global $SB_LIST_THUMB_W;
     global $SB_LIST_THUMB_H;
     
+    echo('<a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh">Force Refresh</a>');
     echo('<div data-role="collapsible-set" data-inset="false">
     <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">');
     
@@ -152,7 +153,7 @@ function getShowAsPage($id) {
             </div>
         </div><!-- /ui-block-a -->
         <div class="ui-block-b">
-            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh">Force Refresh</a>
+            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh">Force Refresh</a>
             <h2><?php echo $show['show_name'];?></h2>
             <table data-role='table'>
                 <thead>

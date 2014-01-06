@@ -1,8 +1,11 @@
-<?php
+<?php 
 namespace SickBeardMobile;
 
+ini_set('error_reporting', E_ALL);
+ini_set("display_errors","1");
+
 if(!is_setup()) { //SBM is not set up, enter some basic info!
-    header("Location: setup");
+    header("Location: redirect?to=setup");
 }
 $json = file_get_contents('settings.json', 0, null, null);
 $setup = json_decode($json,true);

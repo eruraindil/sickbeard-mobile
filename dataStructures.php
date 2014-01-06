@@ -5,6 +5,7 @@ class app {
 
     private $key;
     private $url;
+    private $path;
 
     function __construct($key,$url) {
         $this->key = $key;
