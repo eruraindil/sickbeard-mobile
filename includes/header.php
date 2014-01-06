@@ -29,26 +29,24 @@
         -->
 
         <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css">
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
         <link rel="stylesheet" href="themes/sickbeard-mobile.min.css" />
-        <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.1.min.css" />
+        <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+        <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
 
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
         <script src="js/vendor/jquery-2.0.2.min.js"></script>
-        <script src="js/vendor/jquery.mobile-1.3.1.min.js"></script>
+        <script src="js/vendor/jquery.mobile-1.4.0.min.js"></script>
     </head>
     <body>
         <div data-role="page" id="<?php echo $this->name; ?>">
-            <div data-role="header" data-id="header" data-position="fixed">
+            <div data-role="header" data-position="fixed">
                 <?php if($this->name == "home"):?>
                 <!-- data-iconpos="notext"-->
-                <a href="addshow" data-icon="plus" title="Add Show">Add Show</a>
+                <a href="addshow" data-icon="plus" title="Add Show" data-prefetch="true">Add Show</a>
                 <?php else:?>
-                <a href="./" data-icon="home" title="Go Home">Go Home</a>
+                <a href="./" data-icon="home" title="Go Home" data-prefetch="true">Home</a>
                 <?php endif;?>
                 <h1>SickBeard Mobile</h1>
-                <a href="settings" data-icon="gear"<?php echo($this->name == "settings" ? ' class="ui-btn-active"' : '');?> title="Settings">Settings</a>
+                <a href="settings" data-icon="gear"<?php echo($this->name == "settings" ? ' class="ui-btn-active"' : '');?> title="Settings" data-prefetch="true">Settings</a>
             </div><!-- /header -->
-            <div data-role="content">
+            <div <div role="main" class="ui-content">

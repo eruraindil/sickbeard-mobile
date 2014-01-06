@@ -9,8 +9,8 @@ $setup = json_decode($json,true);
 
 /* GLOBAL VARIABLES */
 
-$SB_LIST_THUMB_W = 100;
-$SB_LIST_THUMB_H = 147;
+$SB_LIST_THUMB_W = 54;
+$SB_LIST_THUMB_H = 80;
 
 $SB_PAGE_THUMB_W = 300;
 $SB_PAGE_THUMB_H = 441;

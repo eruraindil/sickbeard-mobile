@@ -101,7 +101,7 @@ function getShowsAsList() {
     global $SB_LIST_THUMB_H;
     
     echo('<div data-role="collapsible-set" data-inset="false">
-    <ul data-role="listview" data-inset="false">');
+    <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">');
     
     $shows = getShows("name",0);
     foreach($shows as $name=>$show) {
@@ -109,7 +109,7 @@ function getShowsAsList() {
         //if($show['status'] != "Ended") {
             echo("<li><a href='?id=$show[tvdbid]'>");
             if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
-                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px;height:". $SB_LIST_THUMB_H . "px;' />");
+                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
             }
             echo("<h2>" . $name . "</h2></a></li>");
         //}
@@ -132,18 +132,19 @@ function getShowAsPage($id) {
 function getComingShowsAsList($num) {
     echo('<ul data-role="listview" data-inset="true" data-divider-theme="b">');
     foreach(getComing($num) as $section => $contents) {
-        echo('<li data-role="list-divider">');
-            echo ucfirst($section);
-            echo("<span class='ui-li-count'>" . count($contents) . "</span>
-        </li>");
-        foreach($contents as $item) {
-            echo("<li>
-                <a href='./?id=" . $item['tvdbid'] . "'>" . 
-                    $item['airdate'] . " @ " . 
-                    date("ga",strtotime($item['airs'])) . " - " .
-                    $item['show_name'] . " " . $item['season'] . "x" . $item['episode'] . " - <em>" . $item['ep_name'] . "</em>
-                </a>
+        if($contents != NULL) {
+            echo('<li data-role="list-divider">');
+                echo ucfirst($section);
+                echo("<span class='ui-li-count'>" . count($contents) . "</span>
             </li>");
+            foreach($contents as $item) {
+                echo("<li>
+                    <a href='./?id=" . $item['tvdbid'] . "'>" . 
+                        $item['airdate'] . " - " .
+                        $item['show_name'] . " " . $item['season'] . "x" . $item['episode'] . " - <em>" . $item['ep_name'] . "</em>
+                    </a>
+                </li>");
+            }
         }
     }
     echo('</ul>');

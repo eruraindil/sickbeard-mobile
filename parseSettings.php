@@ -10,10 +10,10 @@ function getSettingsAsForm() {
     //form to input url and api num of sickbeard installation. On form submit, save the settings.json file and reload index
     echo("<form method='post'>
         <label for='url'>SickBeard URL</label>
-        <input type='text' id='url' name='url' value='" . (isset($sbm) ? $sbm->getUrl() : '') . "'>
+        <input type='text' id='url' name='url' value='" . (isset($sbm) ? $sbm->getUrl() : '') . "' data-clear-btn='true'>
         
         <label for='url'>SickBeard API Key</label>
-        <input type='text' id='key' name='key' value='" . (isset($sbm) ? $sbm->getKey() : '') . "'>
+        <input type='text' id='key' name='key' value='" . (isset($sbm) ? $sbm->getKey() : '') . "' data-clear-btn='true'>
         
         <button type='submit'>OK</button>
     </form>");
