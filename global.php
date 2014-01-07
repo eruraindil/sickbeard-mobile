@@ -2,7 +2,11 @@
 namespace SickBeardMobile;
 
 ini_set('error_reporting', E_ALL);
-ini_set("display_errors","1");
+if(isset($_GET['debug'])) {
+    ini_set("display_errors","1");
+} else {
+    ini_set("display_errors","0");
+}
 
 if(!is_setup()) { //SBM is not set up, enter some basic info!
     header("Location: redirect?to=setup");

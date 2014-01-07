@@ -4,7 +4,7 @@ namespace SickBeardMobile;
 require_once('global.php');
 
 function getFile($CACHE_FILE, $criteria) {
-    if(file_exists($CACHE_FILE) && (strtotime("-1 day") - filemtime($CACHE_FILE) < 0)) {
+    if(file_exists($CACHE_FILE)) {//&& (strtotime("-1 day") - filemtime($CACHE_FILE) < 0)
         $contents = file_get_contents($CACHE_FILE, 0, null, null);
     } else {
         $contents = contactSickBeard($criteria);
@@ -15,7 +15,7 @@ function getFile($CACHE_FILE, $criteria) {
     return $contents;
 }
 
-function parseFile($contents) {
+function parseJsonFile($contents) {
     $json_output = json_decode($contents,true);
     if($json_output != NULL) {
         if($json_output['result'] == "denied") {
@@ -31,7 +31,7 @@ function contactSickBeard($criteria) {
     
     $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
     if($contents == NULL) {
-        header("Location: redirect?to=error?1");
+        //header("Location: redirect?to=error?1");
     }
     
     return $contents;
@@ -42,7 +42,7 @@ function getShows($sort = "name", $paused = NULL) {
     $criteria = "shows&sort=$sort" . (isset($paused) ? "&paused=$paused": "");
     
     $contents = getFile($CACHE_FILE,$criteria);
-    $json_output = parseFile($contents);
+    $json_output = parseJsonFile($contents);
     
     return $json_output['data'];
 }
@@ -52,7 +52,7 @@ function getShowById($id) {
     $criteria = "show|show.seasons&tvdbid=$id";
     
     $contents = getFile($CACHE_FILE,$criteria);
-    $json_output = parseFile($contents);
+    $json_output = parseJsonFile($contents);
     
     return $json_output['data'];
 }
@@ -62,14 +62,25 @@ function getShowByShowName($name,$id) {
     $criteria = "show&name=$name";
     
     $contents = getFile($CACHE_FILE,$criteria);
-    $json_output = parseFile($contents);
+    $json_output = parseJsonFile($contents);
     
     return $json_output['data'];
 }
 
 function getShowPoster($id) {
-    $contents = contactSickBeard("show.getposter&tvdbid=$id");
-    return "data:image/jpeg;base64," . base64_encode($contents);    
+    $CACHE_FILE = "cache/thumbs/". $id . ".jpg";
+    if(!file_exists($CACHE_FILE)) {
+        $contents = contactSickBeard("show.getposter&tvdbid=$id");
+        if($contents != NULL) {
+            file_put_contents($CACHE_FILE, "data:image/jpeg;base64," . base64_encode($contents),LOCK_EX);
+        }
+    }
+    
+    if(file_exists($CACHE_FILE)) {
+        return true;
+    } else {
+        return false;// "data:image/jpeg;base64," . base64_encode($contents);    
+    }
 }
 
 function getShowThumb($id,$width=100,$height=147) {
@@ -77,7 +88,11 @@ function getShowThumb($id,$width=100,$height=147) {
         return true;
     } else {
         $contents = contactSickBeard("show.getposter&tvdbid=$id");
-        return Img_Resize($contents,$id,$width,$height);
+        if($contents != NULL) {
+            return Img_Resize($contents,$id,$width,$height);
+        } else {
+            return false;
+        }
     }
 }
 
@@ -109,23 +124,27 @@ function getShowsAsList() {
     global $SB_LIST_THUMB_W;
     global $SB_LIST_THUMB_H;
     
-    echo('<div class="pull-right"><a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-ajax="false">Force Refresh</a></div>');
-    echo('<div data-role="collapsible-set" data-inset="false" style="clear:right;">
-    <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">');
-    
-    $shows = getShows("name",0);
-    foreach($shows as $name=>$show) {
-        $id = $show['tvdbid'];
-        //if($show['status'] != "Ended") {
-            echo("<li><a href='./?id=$show[tvdbid]'>");
-            if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
-                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
-            }
-            echo("<h2>" . $name . "</h2></a></li>");
-        //}
-    }
-    echo("</ul></div>");
-
+    ?>
+    <div class="pull-right">
+        <a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Refresh" data-ajax="false">Force Refresh</a>
+        <a href="updateXBMC" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
+    </div>
+    <div data-role="collapsible-set" data-inset="false" style="clear:right;">
+        <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">
+        <?php $shows = getShows("name",0);
+        foreach($shows as $name=>$show) {
+            $id = $show['tvdbid'];
+            //if($show['status'] != "Ended") {
+                echo("<li id='show-list'><a href='./?id=$show[tvdbid]'>");
+                if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
+                    echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
+                }
+                echo("<h2>" . $name . "</h2></a></li>");
+            //}
+        }?>
+        </ul>
+    </div>
+    <?php
 }
 
 function getShowAsPage($id) {
@@ -145,50 +164,66 @@ function getShowAsPage($id) {
         echo("<div data-role='popup' id='popup-$id' data-overlay-theme='b' data-theme='b' data-corners='false'>
         <a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right'>Close</a><img class='popphoto' src='" . getShowPoster($id) . "' style='max-height:512px;' alt='" . $show['show_name'] . "'>
         </div>");
-    }*/?>
-    <div id="show-poster" class="pull-left">
-        <?php if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)):?>
-        <a href="#popup-<?php echo $id;?>" data-rel="popup" data-position-to="window" data-transition="fade">
-            <img src='cache/thumbs/<?php echo $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H";?>.jpg' style='width:<?php echo $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H;?>px;' class='popphoto' alt='<?php echo $show['show_name'];?>' />
-        </a>
-        <?php endif;?>
-    </div>
+    }*/
+    
+    $havePoster = getShowPoster($id); ?>
     <div data-role="popup" id="popup-<?php echo $id;?>" data-overlay-theme="b" data-theme="b" data-corners="false">
         <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-        <img class="popphoto" src="<?php echo getShowPoster($id);?>" style="max-height:512px;" alt="<?php echo $show['show_name'];?>" />
+        <img class="popphoto" src="cache/thumbs/<?=$id;?>.jpg" style="max-height:512px;" alt="<?php echo $show['show_name'];?>" />
+    </div>
+    
+    <div id="show-poster" class="pull-left">
+        <?php if($havePoster) {
+            echo('<a href="#popup-'. $id .'" data-rel="popup" data-position-to="window" data-transition="fade">');
+        }
+        if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
+            echo("<img src='cache/thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px!important;height:". $SB_PAGE_THUMB_H . "px!important;' />");
+        }
+        if($havePoster) {
+            echo('</a>');
+        }?>
     </div>
     <div id="show-details">
         <div class="pull-right">
-            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-iconpos="notext" title="Force Refresh" data-ajax="false">Force Refresh</a>
+            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Refresh" data-ajax="false">Force Refresh</a>
+            <a href="updateXBMC?id=<?=$id;?>" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
         </div>
-        <h2><?php echo $show['show_name'];?></h2>
-        <div id="show-poster-small" class="pull-left">
-            <?php if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
-                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
-            }?>
+        <h2 class="ui-bar"><?php echo $show['show_name'];?></h2>
+        <div id="show-header" class="ui-body">
+            <div id="show-poster-small" class="pull-left">
+                <?php if($havePoster) {
+                    echo('<a href="#popup-'. $id .'" data-rel="popup" data-position-to="window" data-transition="fade">');
+                }
+                    if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
+                        echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
+                    }
+                if($havePoster) {
+                    echo("</a>");
+                }?>
+            </div>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>airs</th>
+                        <td><?php echo $show['airs'];?> on <?php echo $show['network']?></td>
+                    </tr>
+                    <tr>
+                        <th>status</th>
+                        <td><?php echo $show['status'];?></td>
+                    </tr>
+                    <tr>
+                        <th>quality</th>
+                        <td><?php echo $show['quality'];?></td>
+                    </tr>
+                    <tr>
+                        <th>seasons</th>
+                        <td><?php foreach($show['season_list'] as $seasonNum):?>
+                            <a href="?id=<?=$id;?>#season-<?=$seasonNum;?>" data-ajax="false"><?=$seasonNum;?></a>
+                        <?php endforeach;?></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <table id="show-header">
-            <tbody>
-                <tr>
-                    <th>airs</th>
-                    <td><?php echo $show['airs'];?> on <?php echo $show['network']?></td>
-                </tr>
-                <tr>
-                    <th>status</th>
-                    <td><?php echo $show['status'];?></td>
-                </tr>
-                <tr>
-                    <th>quality</th>
-                    <td><?php echo $show['quality'];?></td>
-                </tr>
-                <tr>
-                    <th>seasons</th>
-                    <td><?php foreach($show['season_list'] as $seasonNum):?>
-                        <a href="?id=<?=$id;?>#season-<?=$seasonNum;?>" data-ajax="false"><?=$seasonNum;?></a>
-                    <?php endforeach;?></td>
-                </tr>
-            </tbody>
-        </table>
         <ul data-role="listview" data-inset="true" data-divider-theme="b">
             <?php foreach($seasons as $season=>$episodes):?>
             <li id="season-<?=$season;?>"data-role="list-divider">Season <?=$season;?></li>

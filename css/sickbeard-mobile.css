@@ -5,6 +5,18 @@
     float:left;
 }
 
+.ui-bar, .ui-body {
+    clear:none;
+}
+
+.ui-btn-inline-last {
+    margin-right:0 !important;
+}
+
+li#show-list a {
+    padding-left:60px !important;
+}
+
 #show-poster {
     margin-right:10px;
     margin-bottom:10px;
