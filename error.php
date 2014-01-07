@@ -15,7 +15,7 @@ if(isset($_GET['1'])) {
 if(isset($_GET['2'])) {
     echo("Cannot save file settings.json. Is the file writeable by the webserver?");
 }
-if(isset($_GET['3']) {
+if(isset($_GET['3'])) {
     echo("API Key is invalid.");
 }
 if(isset($_GET['1'])) {

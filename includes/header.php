@@ -32,6 +32,7 @@
         <link rel="stylesheet" href="themes/sickbeard-mobile.min.css" />
         <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
         <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
+        <link rel="stylesheet" href="css/sickbeard-mobile.css" />
 
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
         <script src="js/vendor/jquery-2.0.3.min.js"></script>

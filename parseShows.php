@@ -109,8 +109,8 @@ function getShowsAsList() {
     global $SB_LIST_THUMB_W;
     global $SB_LIST_THUMB_H;
     
-    echo('<a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-ajax="false">Force Refresh</a>');
-    echo('<div data-role="collapsible-set" data-inset="false">
+    echo('<div class="pull-right"><a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-ajax="false">Force Refresh</a></div>');
+    echo('<div data-role="collapsible-set" data-inset="false" style="clear:right;">
     <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">');
     
     $shows = getShows("name",0);
@@ -131,53 +131,86 @@ function getShowsAsList() {
 function getShowAsPage($id) {
     global $SB_PAGE_THUMB_W;
     global $SB_PAGE_THUMB_H;
+    global $SB_LIST_THUMB_W;
+    global $SB_LIST_THUMB_H;
     
     $data = getShowById($id);
     
     $show = $data['show']['data'];
     $seasons = $data['show.seasons']['data'];
     /*if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)) {
-        echo("<a href='#popup-$id' data-rel='popup' data-position-to='window' data-transition='fade'><img src='cache/thumbs/". $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H" . ".jpg' style='width:" . $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H . "px;' class='popphoto' alt='" . $show['show_name'] . "' />");
+         * <img src="<?php echo getShowPoster($id);?>" style="max-width:<?php echo $SB_PAGE_THUMB_W;?>px;max-height:<?php echo $SB_PAGE_THUMB_H;?>px;width:100%;height:auto;display:block;" class="popphoto" alt="<?php echo $show['show_name'];?>" />
+         * 
+        echo("<a href='#popup-$id' data-rel='popup' data-position-to='window' data-transition='fade'>");
         echo("<div data-role='popup' id='popup-$id' data-overlay-theme='b' data-theme='b' data-corners='false'>
         <a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right'>Close</a><img class='popphoto' src='" . getShowPoster($id) . "' style='max-height:512px;' alt='" . $show['show_name'] . "'>
         </div>");
     }*/?>
-    <div class="ui-grid-a">
-        <div class="ui-block-a" style="text-align:center;">
-            <a href="#popup-<?php echo $id;?>" data-rel="popup" data-position-to="window" data-transition="fade">
-                <img src="<?php echo getShowPoster($id);?>" style="max-width:<?php echo $SB_PAGE_THUMB_W;?>px;max-height:<?php echo $SB_PAGE_THUMB_H;?>px;width:100%;height:auto;display:block;" class="popphoto" alt="<?php echo $show['show_name'];?>" />
-            </a>
-            <div data-role="popup" id="popup-<?php echo $id;?>" data-overlay-theme="b" data-theme="b" data-corners="false">
-                <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-                <img class="popphoto" src="<?php echo getShowPoster($id);?>" style="max-height:512px;" alt="<?php echo $show['show_name'];?>" />
-            </div>
-        </div><!-- /ui-block-a -->
-        <div class="ui-block-b">
-            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-ajax="false">Force Refresh</a>
-            <h2><?php echo $show['show_name'];?></h2>
-            <table data-role='table'>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th>airs</th>
-                        <td><?php echo $show['airs'];?> on <?php echo $show['network']?></td>
-                    </tr>
-                    <tr>
-                        <th>status</th>
-                        <td><?php echo $show['status'];?></td>
-                    </tr>
-                    <tr>
-                        <th>quality</th>
-                        <td><?php echo $show['quality'];?></td>
-                    </tr>
-                </tbody>
-            </table>
+    <div id="show-poster" class="pull-left">
+        <?php if(getShowThumb($id,$SB_PAGE_THUMB_W,$SB_PAGE_THUMB_H)):?>
+        <a href="#popup-<?php echo $id;?>" data-rel="popup" data-position-to="window" data-transition="fade">
+            <img src='cache/thumbs/<?php echo $id . "_$SB_PAGE_THUMB_W" . "x$SB_PAGE_THUMB_H";?>.jpg' style='width:<?php echo $SB_PAGE_THUMB_W . "px;height:". $SB_PAGE_THUMB_H;?>px;' class='popphoto' alt='<?php echo $show['show_name'];?>' />
+        </a>
+        <?php endif;?>
+    </div>
+    <div data-role="popup" id="popup-<?php echo $id;?>" data-overlay-theme="b" data-theme="b" data-corners="false">
+        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+        <img class="popphoto" src="<?php echo getShowPoster($id);?>" style="max-height:512px;" alt="<?php echo $show['show_name'];?>" />
+    </div>
+    <div id="show-details">
+        <div class="pull-right">
+            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-shadow ui-corner-all ui-btn-icon-left ui-icon-refresh" data-iconpos="notext" title="Force Refresh" data-ajax="false">Force Refresh</a>
         </div>
+        <h2><?php echo $show['show_name'];?></h2>
+        <div id="show-poster-small" class="pull-left">
+            <?php if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
+                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
+            }?>
+        </div>
+        <table id="show-header">
+            <tbody>
+                <tr>
+                    <th>airs</th>
+                    <td><?php echo $show['airs'];?> on <?php echo $show['network']?></td>
+                </tr>
+                <tr>
+                    <th>status</th>
+                    <td><?php echo $show['status'];?></td>
+                </tr>
+                <tr>
+                    <th>quality</th>
+                    <td><?php echo $show['quality'];?></td>
+                </tr>
+                <tr>
+                    <th>seasons</th>
+                    <td><?php foreach($show['season_list'] as $seasonNum):?>
+                        <a href="?id=<?=$id;?>#season-<?=$seasonNum;?>" data-ajax="false"><?=$seasonNum;?></a>
+                    <?php endforeach;?></td>
+                </tr>
+            </tbody>
+        </table>
+        <ul data-role="listview" data-inset="true" data-divider-theme="b">
+            <?php foreach($seasons as $season=>$episodes):?>
+            <li id="season-<?=$season;?>"data-role="list-divider">Season <?=$season;?></li>
+            <?php foreach($episodes as $episode=>$details):?>
+            <?php
+            echo("<li");
+                if($details['status'] == 'Downloaded') {
+                    echo(' style="background-color:#E2FFD8!important;"');
+                } else if($details['status'] == 'Wanted') {
+                    echo(' style="background-color:#FDEBF3!important;"');
+                } else if($details['status'] == 'Snatched') {
+                    echo(' style="background-color:#F5F1E4!important;"');
+                }
+            echo(">");?>
+                <strong><?=$episode;?>.</strong> <?=$details['name'];?>
+                <div class="pull-right">
+                    <span class='ui-li-count'><?=$details['status'];?></span>
+                </div>
+            </li>
+            <?php endforeach;?>
+            <?php endforeach;?>
+        </ul>
     </div>
     <?php
 }
