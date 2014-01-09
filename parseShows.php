@@ -31,7 +31,7 @@ function contactSickBeard($criteria) {
     
     $contents = file_get_contents($sbm->getApiUrl() . $criteria, 0, null, null);
     if($contents == NULL) {
-        //header("Location: redirect?to=error?1");
+        header("Location: redirect?to=error?1");
     }
     
     return $contents;
@@ -72,7 +72,9 @@ function getShowPoster($id) {
     if(!file_exists($CACHE_FILE)) {
         $contents = contactSickBeard("show.getposter&tvdbid=$id");
         if($contents != NULL) {
-            file_put_contents($CACHE_FILE, "data:image/jpeg;base64," . base64_encode($contents),LOCK_EX);
+            $img = imagecreatefromjpeg("data:image/jpeg;base64," . base64_encode($contents));
+            imagejpeg( $img, "cache/thumbs/". $id . ".jpg", 80 );
+            //file_put_contents($CACHE_FILE, "data:image/jpeg;base64," . base64_encode($contents),LOCK_EX);
         }
     }
     
@@ -98,14 +100,14 @@ function getShowThumb($id,$width=100,$height=147) {
 
 function getHistory($limit=20) {
     $contents = contactSickBeard("history&limit=$limit");
-    $json_output = parseFile($contents);
+    $json_output = parseJsonFile($contents);
     
     return $json_output['data'];
 }
 
 function getComing($limit=20) {
     $contents = contactSickBeard("future&type=missed|today|soon");
-    $json_output = parseFile($contents);
+    $json_output = parseJsonFile($contents);
 
     $missed = $json_output['data']['missed'];
     $today = $json_output['data']['today'];
@@ -217,7 +219,7 @@ function getShowAsPage($id) {
                     </tr>
                     <tr>
                         <th>seasons</th>
-                        <td><?php foreach($show['season_list'] as $seasonNum):?>
+                        <td><?php foreach(array_reverse($show['season_list'],true) as $seasonNum):?>
                             <a href="?id=<?=$id;?>#season-<?=$seasonNum;?>" data-ajax="false"><?=$seasonNum;?></a>
                         <?php endforeach;?></td>
                     </tr>
@@ -225,10 +227,9 @@ function getShowAsPage($id) {
             </table>
         </div>
         <ul data-role="listview" data-inset="true" data-divider-theme="b">
-            <?php foreach($seasons as $season=>$episodes):?>
+            <?php foreach(array_reverse($seasons,true) as $season=>$episodes):?>
             <li id="season-<?=$season;?>"data-role="list-divider">Season <?=$season;?></li>
-            <?php foreach($episodes as $episode=>$details):?>
-            <?php
+            <?php foreach(array_reverse($episodes,true) as $episode=>$details):
             echo("<li");
                 if($details['status'] == 'Downloaded') {
                     echo(' style="background-color:#E2FFD8!important;"');
@@ -256,8 +257,8 @@ function getComingShowsAsList($num) {
         if($contents != NULL) {
             echo('<li data-role="list-divider">');
                 echo ucfirst($section);
-                echo("<span class='ui-li-count'>" . count($contents) . "</span>
-            </li>");
+                echo("<span class='ui-li-count'>" . count($contents) . "</span>");
+            echo("</li>");
             foreach($contents as $item) {
                 echo("<li>
                     <a href='./?id=" . $item['tvdbid'] . "'");
