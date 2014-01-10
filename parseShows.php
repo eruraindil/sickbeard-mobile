@@ -128,7 +128,7 @@ function getShowsAsList() {
     
     ?>
     <div class="pull-right">
-        <a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Refresh" data-ajax="false">Force Refresh</a>
+        <a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Update" data-ajax="false">Force Update</a>
         <a href="updateXBMC" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
     </div>
     <div data-role="collapsible-set" data-inset="false" style="clear:right;">
@@ -187,7 +187,7 @@ function getShowAsPage($id) {
     </div>
     <div id="show-details">
         <div class="pull-right">
-            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Refresh" data-ajax="false">Force Refresh</a>
+            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Update" data-ajax="false">Force Update</a>
             <a href="updateXBMC?id=<?=$id;?>" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
         </div>
         <h2 class="ui-bar"><?php echo $show['show_name'];?></h2>
@@ -229,21 +229,36 @@ function getShowAsPage($id) {
         <ul data-role="listview" data-inset="true" data-divider-theme="b">
             <?php foreach(array_reverse($seasons,true) as $season=>$episodes):?>
             <li id="season-<?=$season;?>"data-role="list-divider">Season <?=$season;?></li>
-            <?php foreach(array_reverse($episodes,true) as $episode=>$details):
-            echo("<li");
-                if($details['status'] == 'Downloaded') {
-                    echo(' style="background-color:#E2FFD8!important;"');
-                } else if($details['status'] == 'Wanted') {
-                    echo(' style="background-color:#FDEBF3!important;"');
-                } else if($details['status'] == 'Snatched') {
-                    echo(' style="background-color:#F5F1E4!important;"');
-                }
-            echo(">");?>
-                <strong><?=$episode;?>.</strong> <?=$details['name'];?>
-                <div class="pull-right">
+            <?php foreach(array_reverse($episodes,true) as $episode=>$details):?>
+            <?php if($details['status'] != "Unaired"):?>
+            <li data-icon="false">
+                <a href="#popup<?=$season.$episode?>" data-rel="popup" data-transition="pop"<?php
+                    if($details['status'] == 'Downloaded') {
+                        echo(' style="background-color:#E2FFD8!important;"');
+                    } else if($details['status'] == 'Wanted') {
+                        echo(' style="background-color:#FDEBF3!important;"');
+                    } else if($details['status'] == 'Snatched') {
+                        echo(' style="background-color:#F5F1E4!important;"');
+                    }?>>
+                    <strong><?=$episode;?>.</strong> <?=$details['name'];?>
                     <span class='ui-li-count'><?=$details['status'];?></span>
-                </div>
+                </a>
             </li>
+            <?php else:?>
+            <li data-icon="false">
+                <strong><?=$episode;?>.</strong> <?=$details['name'];?>
+                <span class='ui-li-count'><?=$details['status'];?></span>
+            </li>
+            <?php endif;?>
+            <div data-role="popup" id="popup<?=$season.$episode?>" data-theme="a">
+                <ul data-role="listview" data-inset="true" style="min-width:210px;">
+                    <li data-role="list-divider">Change status</li>
+                    <li><a href="updateEpisode?id=<?=$id;?>&amp;s=<?=$season;?>&amp;e=<?=$episode;?>&amp;status=wanted" data-ajax="false">Wanted</a></li>
+                    <li><a href="updateEpisode?id=<?=$id;?>&amp;s=<?=$season;?>&amp;e=<?=$episode;?>&amp;status=skipped" data-ajax="false">Skipped</a></li>
+                    <li><a href="updateEpisode?id=<?=$id;?>&amp;s=<?=$season;?>&amp;e=<?=$episode;?>&amp;status=archived" data-ajax="false">Archived</a></li>
+                    <li><a href="updateEpisode?id=<?=$id;?>&amp;s=<?=$season;?>&amp;e=<?=$episode;?>&amp;status=ignored" data-ajax="false">Ignored</a></li>
+                </ul>
+            </div>
             <?php endforeach;?>
             <?php endforeach;?>
         </ul>
