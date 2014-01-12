@@ -37,27 +37,18 @@ function contactSickBeard($criteria) {
     return $contents;
 }
 
-function getShows($sort = "name", $paused = 0) {
-    $CACHE_FILE = "cache/getShows_by$sort$paused.json";
-    $criteria = "shows&sort=$sort&paused=$paused";
+function getShows($sort = "name") {
+    $CACHE_FILE = "cache/getShows_by$sort.json";
+    $criteria = "shows&sort=$sort";
     
     $contents = getFile($CACHE_FILE,$criteria);
     $json_output = parseJsonFile($contents);
     
-    $content = $json_output['data'];
-    
-    //rprint($content);
-    
-    //echo cmp($content['Alias'], $content['Alien Planet']);
-    //$a = array("John" => 1, "The Earth" => 2, "An apple" => 3, "A banana" => 4);
-    
     if($sort == "name") {
-        $sorted = uksort($content, "SickBeardMobile\cmp");
+        $sorted = uksort($json_output['data'], "SickBeardMobile\cmp");
     }
     
-    //rprint($a);
-    
-    return $content;
+    return $json_output['data'];
 }
 
 function getShowById($id) {
@@ -139,26 +130,63 @@ function getShowsAsList() {
     global $SB_LIST_THUMB_W;
     global $SB_LIST_THUMB_H;
     
+    if(isset($_POST['display'])) {
+        $_SESSION['display'] = $_POST['display'];
+    } elseif(isset($_SESSION['display'])) {
+        $_POST['display'] = $_SESSION['display'];
+    } else {
+        $_POST['display'] = "Continuing";
+    }
+    
     ?>
     <div class="pull-right">
         <a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Update" data-ajax="false">Force Update</a>
         <a href="updateXBMC" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
     </div>
-    <div data-role="collapsible-set" data-inset="false" style="clear:right;">
-        <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false">
-        <?php $shows = getShows("name",0);
-        foreach($shows as $name=>$show) {
-            $id = $show['tvdbid'];
-            //if($show['status'] != "Ended") {
-                echo("<li id='show-list'><a href='./?id=$show[tvdbid]'>");
-                if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
-                    echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
-                }
-                echo("<h2>" . $name . "</h2></a></li>");
-            //}
-        }?>
-        </ul>
+    <div data-role="collapsible" data-inset="false" style="clear:right;">
+        <h2>
+            Options
+        </h2>
+        <form method="post">
+            <ul data-role="listview" data-inset="true">
+                <li>
+                    <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                        <legend>Display:</legend>
+                        <input type="radio" name="display" id="display-a" value="Continuing"<?=(((isset($_POST['display']) && $_POST['display'] == 'Continuing') || !isset($_POST['display'])) ? 'checked="checked"' : '')?>>
+                        <label for="display-a">Continuing</label>
+                        <input type="radio" name="display" id="display-b" value="Ended"<?=(isset($_POST['display']) && $_POST['display'] == 'Ended' ? 'checked="checked"' : '')?>>
+                        <label for="display-b">Ended</label>
+                        <input type="radio" name="display" id="display-c" value="Paused"<?=(isset($_POST['display']) && $_POST['display'] == 'Paused' ? 'checked="checked"' : '')?>>
+                        <label for="display-c">Paused</label>
+                        <input type="radio" name="display" id="display-d" value="All"<?=(isset($_POST['display']) && $_POST['display'] == 'All' ? 'checked="checked"' : '')?>>
+                        <label for="display-d">All</label>
+                    </fieldset>
+                </li>
+                <li>
+                    <button type="submit" class="ui-btn">Submit</button>
+                </li>
+            </ul>
+        </form>
     </div>
+    <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false" style="clear:both;">
+    <?php $shows = getShows("name");
+    foreach($shows as $name=>$show) {
+        $id = $show['tvdbid'];
+        
+        if(
+            (isset($_POST['display']) && $_POST['display'] == $show['status']) ||
+            (isset($_POST['display']) && $_POST['display'] == "Paused" && $show['paused'] == 1) ||
+            (isset($_POST['display']) && $_POST['display'] == "All") ||
+            (!isset($_POST['display']) && $show['status'] == "Continuing")
+        ) {
+            echo("<li id='show-list'><a href='./?id=$show[tvdbid]'>");
+            if(getShowThumb($id,$SB_LIST_THUMB_W,$SB_LIST_THUMB_H)) {
+                echo("<img src='cache/thumbs/". $id . "_$SB_LIST_THUMB_W" . "x$SB_LIST_THUMB_H" . ".jpg' style='width:" . $SB_LIST_THUMB_W . "px!important;height:". $SB_LIST_THUMB_H . "px!important;' />");
+            }
+            echo("<h2>" . $name . "</h2></a></li>");
+        }
+    }?>
+    </ul>
     <?php
 }
 
@@ -225,6 +253,10 @@ function getShowAsPage($id) {
                     <tr>
                         <th>status</th>
                         <td><?php echo $show['status'];?></td>
+                    </tr>
+                    <tr>
+                        <th>paused</th>
+                        <td><?php if($show['paused']) { echo "yes";} else { echo "no";}?></td>
                     </tr>
                     <tr>
                         <th>quality</th>
