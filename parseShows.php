@@ -4,7 +4,7 @@ namespace SickBeardMobile;
 require_once('global.php');
 
 function getFile($CACHE_FILE, $criteria) {
-    if(file_exists($CACHE_FILE)) {//&& (strtotime("-1 day") - filemtime($CACHE_FILE) < 0)
+    if(file_exists($CACHE_FILE) && (strtotime("-1 day") - filemtime($CACHE_FILE) < 0)) {
         $contents = file_get_contents($CACHE_FILE, 0, null, null);
     } else {
         $contents = contactSickBeard($criteria);
