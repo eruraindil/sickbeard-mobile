@@ -58,4 +58,11 @@ function is_setup() {
         return false;
     }
 }
+
+// via http://www.php.net/manual/en/function.uksort.php
+function cmp($a, $b) {
+    $a = preg_replace('/^(A|An|The) /', '', $a);
+    $b = preg_replace('/^(A|An|The) /', '', $b);
+    return strcasecmp($a, $b);
+}
 ?>

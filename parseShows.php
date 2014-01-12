@@ -37,14 +37,27 @@ function contactSickBeard($criteria) {
     return $contents;
 }
 
-function getShows($sort = "name", $paused = NULL) {
-    $CACHE_FILE = "cache/getShows.json";
-    $criteria = "shows&sort=$sort" . (isset($paused) ? "&paused=$paused": "");
+function getShows($sort = "name", $paused = 0) {
+    $CACHE_FILE = "cache/getShows_by$sort$paused.json";
+    $criteria = "shows&sort=$sort&paused=$paused";
     
     $contents = getFile($CACHE_FILE,$criteria);
     $json_output = parseJsonFile($contents);
     
-    return $json_output['data'];
+    $content = $json_output['data'];
+    
+    //rprint($content);
+    
+    //echo cmp($content['Alias'], $content['Alien Planet']);
+    //$a = array("John" => 1, "The Earth" => 2, "An apple" => 3, "A banana" => 4);
+    
+    if($sort == "name") {
+        $sorted = uksort($content, "SickBeardMobile\cmp");
+    }
+    
+    //rprint($a);
+    
+    return $content;
 }
 
 function getShowById($id) {
