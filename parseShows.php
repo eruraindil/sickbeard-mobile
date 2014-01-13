@@ -380,7 +380,7 @@ function getAddShowFormSubmit() {
                 <!--<?php if(isset($show->banner)):?>
                     <img src="http://thetvdb.com/banners/<?=$show->banner;?>" alt="<?=$show->SeriesName;?> banner" style="max-width:100%;" />
                 <?php endif;?>-->
-                <a href="?id=<?=$show->seriesid?>" class="ui-btn ui-icon-check ui-btn-icon-left" data-ajax="false">Add Show</a>
+                <a href="addshow?id=<?=$show->seriesid?>" class="ui-btn ui-icon-check ui-btn-icon-left" data-ajax="false">Add Show</a>
             </div>
         <?php endforeach;
         echo("</div>");
