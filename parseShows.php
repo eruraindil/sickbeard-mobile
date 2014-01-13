@@ -391,7 +391,8 @@ function getAddShowFormSubmit() {
 function getAddShowIdSubmit() {
     if(isset($_GET['id'])) {
         $content = contactSickBeard("show.addnew&tvdbid=" . $_GET['id']);
-        if($content["result"] == "success") {
+        $json_output = parseJsonFile($content);
+        if($json_output["result"] == "success") {
             header("Location: redirect?to=./");
         } else {
             header("Location: redirect?to=error?4");
