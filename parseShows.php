@@ -351,7 +351,7 @@ function getHistoryAsList($num) {
 }
 
 function getAddShowForm() { ?>
-    <form method="get">
+    <form method="get" data-ajax="false">
         <input type="search" name="search" id="search" value="<?=(isset($_GET['search']) ? $_GET['search'] : '')?>" placeholder="Search for Shows...">
         <button type="submit" class="ui-btn">Submit</button>
     </form>
