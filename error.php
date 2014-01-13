@@ -18,6 +18,9 @@ if(isset($_GET['2'])) {
 if(isset($_GET['3'])) {
     echo("API Key is invalid.");
 }
+if(isset($_GET['4'])) {
+    echo("Cannot add show.");
+}
 if(isset($_GET['1'])) {
     $setup->getFooter("offline");
 } else {

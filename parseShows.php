@@ -351,7 +351,7 @@ function getHistoryAsList($num) {
 }
 
 function getAddShowForm() { ?>
-    <form method="get" data-ajax="false">
+    <form method="get">
         <input type="search" name="search" id="search" value="<?=(isset($_GET['search']) ? $_GET['search'] : '')?>" placeholder="Search for Shows...">
         <button type="submit" class="ui-btn">Submit</button>
     </form>
@@ -380,7 +380,7 @@ function getAddShowFormSubmit() {
                 <!--<?php if(isset($show->banner)):?>
                     <img src="http://thetvdb.com/banners/<?=$show->banner;?>" alt="<?=$show->SeriesName;?> banner" style="max-width:100%;" />
                 <?php endif;?>-->
-                <a href="?id=<?=$show->seriesid?>" class="ui-btn ui-icon-check ui-btn-icon-left">Add Show</a>
+                <a href="?id=<?=$show->seriesid?>" class="ui-btn ui-icon-check ui-btn-icon-left" data-ajax="false">Add Show</a>
             </div>
         <?php endforeach;
         echo("</div>");
@@ -394,8 +394,7 @@ function getAddShowIdSubmit() {
         if($content["result"] == "success") {
             header("Location: redirect?to=./");
         } else {
-            echo("There was an error");
-            //header("Location: redirect?to=error?4");
+            header("Location: redirect?to=error?4");
         }
     }
 }
