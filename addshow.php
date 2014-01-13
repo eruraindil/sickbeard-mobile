@@ -3,9 +3,12 @@ namespace SickBeardMobile;
 
 require_once('global.php');
 
+getAddShowIdSubmit();
+
 $addshow = new page('addshow');
 $addshow->getHeader();
-getHistory(10);
+getAddShowForm();
+getAddShowFormSubmit();
 $addshow->getFooter();
 
 ?>

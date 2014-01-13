@@ -3,7 +3,7 @@ namespace SickBeardMobile;
 
 require_once('global.php');
 
-getFormSubmit();
+getSettingsFormSubmit();
 
 $settings = new page('settings');
 $settings->getHeader();

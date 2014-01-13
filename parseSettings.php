@@ -20,7 +20,7 @@ function getSettingsAsForm() {
     </form>");
 }
 
-function getFormSubmit() {
+function getSettingsFormSubmit() {
     if(isset($_POST['url']) && isset($_POST['key'])) {
         $data = array();
         $data["SB_URL"] = $_POST['url'];

@@ -140,10 +140,10 @@ function getShowsAsList() {
     
     ?>
     <div class="pull-right">
-        <a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Update" data-ajax="false">Force Update</a>
-        <a href="updateXBMC" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
+        <a href="forceUpdate" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext ui-corner-all" title="Force Update" data-ajax="false">Force Update</a>
+        <a href="updateXBMC" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action ui-corner-all" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
     </div>
-    <div data-role="collapsible" data-inset="false" style="clear:right;">
+    <div data-role="collapsible" data-inset="false" style="clear:right;" data-collapsed-icon="bars" data-expanded-icon="minus">
         <h2>
             Options
         </h2>
@@ -168,7 +168,7 @@ function getShowsAsList() {
             </ul>
         </form>
     </div>
-    <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="false" style="clear:both;">
+    <ul data-role="listview" data-filter="true" data-filter-placeholder="Search shows..." data-inset="true" style="clear:both;">
     <?php $shows = getShows("name");
     foreach($shows as $name=>$show) {
         $id = $show['tvdbid'];
@@ -228,8 +228,8 @@ function getShowAsPage($id) {
     </div>
     <div id="show-details">
         <div class="pull-right">
-            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext" title="Force Update" data-ajax="false">Force Update</a>
-            <a href="updateXBMC?id=<?=$id;?>" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
+            <a href="forceUpdate?id=<?php echo $id;?>" class="ui-btn ui-mini ui-btn-inline ui-icon-refresh ui-btn-icon-notext ui-corner-all" title="Force Update" data-ajax="false">Force Update</a>
+            <a href="updateXBMC?id=<?=$id;?>" class="ui-btn ui-mini ui-btn-inline ui-btn-inline-last ui-btn-icon-notext ui-icon-action ui-corner-all" data-iconpos="notext" title="Update XBMC" data-ajax="false">Update XBMC</a>
         </div>
         <h2 class="ui-bar"><?php echo $show['show_name'];?></h2>
         <div id="show-header" class="ui-body">
@@ -341,14 +341,62 @@ function getComingShowsAsList($num) {
 }
 
 function getHistoryAsList($num) {
-    echo('<div data-role="collapsible-set" data-inset="false">
-    <ul data-role="listview" data-inset="false">');
+    echo('<ul data-role="listview" data-inset="true">');
     foreach(getHistory($num) as $show) {
         echo("<li><a href='./?id=$show[tvdbid]'" . ($show['status'] == 'Downloaded' ? ' style="background-color:#E2FFD8!important;"' : ' style="background-color:#FDEBF3!important;"') . ">");
         echo(date("Y-m-d @ h:i",strtotime($show['date'])) . " " .
             $show['show_name'] . " - " . $show['season'] . "x" . $show['episode'] . "</a></li>");
     }
-    echo("</ul></div>");
+    echo("</ul>");
 }
 
+function getAddShowForm() { ?>
+    <form method="get">
+        <input type="search" name="search" id="search" value="<?=(isset($_GET['search']) ? $_GET['search'] : '')?>" placeholder="Search for Shows...">
+        <button type="submit" class="ui-btn">Submit</button>
+    </form>
+<?php }
+
+function getAddShowFormSubmit() {
+    if(isset($_GET['search'])) {
+        $results = simplexml_load_file("http://thetvdb.com/api/GetSeries.php?seriesname=" . htmlspecialchars($_GET['search']));
+        //echo("<ul data-role='listview' data-inset='true' data-divider-theme='b'>");
+        echo("<div data-role='collapsible-set'>");
+        if(!isset($results->Series)) {
+            echo("<ul data-role='listview' data-inset='true'><li>No results.</li></ul>");
+        }
+        foreach($results->Series as $num => $show):?>
+            <div data-role="collapsible">
+                <h2><?=$show->SeriesName;?> (<?=date("Y",strtotime($show->FirstAired));?>)</h2>
+                <div class="pull-right">
+                    <a href="http://thetvdb.com/?tab=series&id=<?=$show->seriesid;?>" target="_blank" title="Go to TheTVDB" class="ui-btn ui-icon-action ui-btn-icon-left ui-btn-inline ui-corner-all">Go to TheTVDB</a>
+                </div>
+                <?php if(isset($show->FirstAired) && isset($show->Network)):?>
+                    <p>First aired <?=date("M jS, Y", strtotime($show->FirstAired));?> on <?=$show->Network;?></p>
+                <?php endif;?>
+                <?php if(isset($show->Overview)):?>
+                    <p><?=$show->Overview;?></p>
+                <?php endif;?>
+                <!--<?php if(isset($show->banner)):?>
+                    <img src="http://thetvdb.com/banners/<?=$show->banner;?>" alt="<?=$show->SeriesName;?> banner" style="max-width:100%;" />
+                <?php endif;?>-->
+                <a href="?id=<?=$show->seriesid?>" class="ui-btn ui-icon-check ui-btn-icon-left">Add Show</a>
+            </div>
+        <?php endforeach;
+        echo("</div>");
+        echo("<ul data-role='listview' data-inset='true' data-theme='b'><li data-role='list-divider'>powered by thetvdb.com</li></ul>");
+    } 
+}
+
+function getAddShowIdSubmit() {
+    if(isset($_GET['id'])) {
+        $content = contactSickBeard("show.addnew&tvdbid=" . $_GET['id']);
+        if($content["result"] == "success") {
+            header("Location: redirect?to=./");
+        } else {
+            echo("There was an error");
+            //header("Location: redirect?to=error?4");
+        }
+    }
+}
 ?>
